@@ -1,0 +1,118 @@
+# STRM: Spatio-Temporal Resilience Mesh
+# A Spatio-Temporal Resilience Mesh for Autonomous, Risk-Aware Supply Chain Optimization
+# .gitignore
+
+### Python ###
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-log.txt
+pip-delete-this-directory.txt
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+instance/
+.pyenv
+
+### Virtual Environment ###
+venv/
+env/
+ENV/
+STRM/  # Your virtual environment
+.env
+.venv
+
+data/
+
+### IDE ###
+# VS Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# PyCharm
+.idea/
+*.ipr
+*.iws
+*.iml
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+### Data & Models ###
+# Raw and preprocessed data (keep only metadata or samples in Git)
+/data/raw/
+/data/preprocessed/
+/data/*.csv
+/data/*.json
+/data/*.parquet
+
+# Models (save only metadata/configs)
+/models/*.pkl
+/models/*.joblib
+/models/*.pt
+/models/*.pth
+/models/*.h5
+/models/*.onnx
+
+# Training logs
+/logs/
+*.log
+
+### Jupyter Notebooks ###
+*.ipynb
+*.ipynb_checkpoints
+
+### Reports ###
+/reports/figures/
+/reports/*.html
+/reports/*.pdf
+
+### OS ###
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+### FastAPI / Backend ###
+# Local environment variables
+.env
+.env.local
+
+# Databases
+*.sqlite3
+*.db
+
+# Redis / Cache
+redis_data/
+
+# Docker
+docker-compose.override.yml
