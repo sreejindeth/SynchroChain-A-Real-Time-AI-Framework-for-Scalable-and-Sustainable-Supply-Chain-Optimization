@@ -6,6 +6,7 @@ Transforms raw DataCo data into structured inputs for AI components.
 - Ensures correct naming for 'product_name'.
 - Produces temporal splits for train/validation/test.
 - Includes feature engineering for historical delay rates.
+- Adds Category Name for semantic embeddings in Intent model.
 """
 
 import pandas as pd
@@ -17,10 +18,6 @@ def load_data(file_path, is_access_log=False):
     """Loads the raw CSV, handling encoding issues robustly."""
     try:
         if is_access_log:
-            # --- CORRECTION: Handle access logs correctly ---
-            # The provided tokenized_access_logs.csv seems to be the one WITH data.
-            # The Pasted_Text_1755518213784.txt was empty.
-            # So, we load it directly, expecting data.
             df = pd.read_csv(file_path)
             print(f"Loaded {file_path} using default encoding.")
         else:
@@ -32,84 +29,171 @@ def load_data(file_path, is_access_log=False):
         df = pd.read_csv(file_path, encoding='ISO-8859-1')
     return df
 
-# src/preprocessing/preprocess_data.py (Inside the preprocess_access_logs function)
-
-def preprocess_access_logs(df_access_raw):
+def preprocess_access_logs(df_access_raw, df_orders_raw=None):
     """
     Cleans and structures the tokenized_access_logs.csv data.
-    - Renames columns as needed
-    - Ensures session_id exists, generating it if missing
-    - Handles feature derivation for action and navigation_depth
+    Joins with df_orders_raw to add 'Category Name' for semantic embeddings.
     """
     print("Preprocessing access logs...")
+    # Work on a copy to avoid SettingWithCopyWarning
     df_access = df_access_raw.copy()
+    print(f"  Initial access log shape: {df_access.shape}")
     print(f"  Initial access log columns: {list(df_access.columns)}")
 
-    # Rename for consistency
-    for col_map in [('Product', 'product_name'), ('Date', 'timestamp'), ('ip', 'user_id')]:
-        src, tgt = col_map
-        if src in df_access.columns and tgt not in df_access.columns:
-            df_access.rename(columns={src: tgt}, inplace=True)
-            print(f"  Renamed '{src}' to '{tgt}'.")
+    # --- 1. Rename Columns for Consistency ---
+    # Check for common alternative names and standardize to expected names
+    column_renames = {
+        'Product': 'product_name',      # Standardize product name column
+        'Date': 'timestamp',             # Standardize timestamp column
+        'ip': 'user_id'                  # Standardize user ID column
+        # Add more renames if other inconsistencies are found in your specific file
+    }
+    
+    # Only rename if the source column exists and target doesn't
+    cols_to_rename = {k: v for k, v in column_renames.items() 
+                     if k in df_access.columns and v not in df_access.columns}
+    if cols_to_rename:
+        df_access.rename(columns=cols_to_rename, inplace=True)
+        print(f"  Renamed columns: {cols_to_rename}")
 
-    print(f"  Available columns: {df_access.columns.tolist()}")
+    # --- 2. Ensure Required Columns Exist ---
+    required_base_columns = ['product_name', 'user_id', 'timestamp']
+    missing_required = [col for col in required_base_columns if col not in df_access.columns]
+    if missing_required:
+        raise KeyError(f"Missing required base columns in access logs: {missing_required}")
 
-    # Generate session_id if missing
-    if 'session_id' not in df_access.columns:
-        print("  'session_id' column not found. Generating dummy session_id per row.")
-        df_access['session_id'] = df_access.index  # Each row gets a unique session_id
-
-    # Parse timestamps
+    # --- 3. Parse Timestamps Robustly ---
+    print(f"  Parsing timestamps...")
     df_access['timestamp'] = pd.to_datetime(df_access['timestamp'], errors='coerce')
-    print(f"  Parsed timestamps. Invalid dates: {df_access['timestamp'].isna().sum()}")
+    invalid_timestamps = df_access['timestamp'].isna().sum()
+    print(f"    Parsed timestamps. Invalid dates: {invalid_timestamps}")
+    if invalid_timestamps > 0:
+        print(f"    Warning: {invalid_timestamps} rows have invalid timestamps. They will be handled.")
 
-    # Derive 'action' if missing
+    # --- 4. Derive or Verify 'action' Column ---
     if 'action' not in df_access.columns:
+        print("  'action' column not found. Deriving from 'url' or defaulting to 'view'.")
         if 'url' in df_access.columns:
-            print("  'action' not found. Deriving from 'url'.")
-            df_access['action'] = df_access['url'].apply(lambda x: 'add_to_cart' if 'add_to_cart' in str(x) else 'view')
+            # Example: Derive 'add_to_cart' from URL
+            df_access['action'] = df_access['url'].apply(
+                lambda x: 'add_to_cart' if 'add_to_cart' in str(x) else 'view'
+            )
+            print("    Derived 'action' from 'url'.")
         else:
-            print("  'action' and 'url' not found. Defaulting to 'view'.")
+            # Default action if neither 'action' nor 'url' is present
             df_access['action'] = 'view'
+            print("    'url' not found. Defaulting all actions to 'view'.")
+    else:
+        print("  'action' column found.")
 
-    # Derive navigation_depth if missing
+    # --- 5. Ensure 'session_id' Exists ---
+    if 'session_id' not in df_access.columns:
+        print("  'session_id' column not found. Generating session_id based on user_id and time window (e.g., hour).")
+        # Ensure timestamp is parsed
+        df_access['timestamp'] = pd.to_datetime(df_access['timestamp'], errors='coerce')
+        # Create session_id: user_id_timestamp_truncated_to_hour
+        df_access['temp_session_key'] = (
+            df_access['user_id'].astype(str) + "_" +
+            df_access['timestamp'].dt.strftime('%Y-%m-%d_%H')
+        )
+        # Use factorize to efficiently convert string session keys to integer IDs
+        df_access['session_id'], _ = pd.factorize(df_access['temp_session_key'])
+        # Clean up temporary column
+        df_access.drop(columns=['temp_session_key'], inplace=True)
+        print("    Generated session_id based on user_id + hour.")
+    else:
+        print("  'session_id' column found.")
+
+    # --- 6. Ensure 'navigation_depth' Exists or Derive it ---
     if 'navigation_depth' not in df_access.columns:
-        print("  'navigation_depth' not found. Deriving as count per session_id.")
+        print("  'navigation_depth' column not found. Deriving as count per session_id.")
+        # Group by session_id and count interactions to get navigation depth
         session_counts = df_access.groupby('session_id').size()
+        # Map the count back to each row in the dataframe
+        # Use merge to avoid SettingWithCopyWarning
         df_access = df_access.merge(
             session_counts.rename('navigation_depth'),
             left_on='session_id',
             right_index=True,
             how='left'
         )
-        df_access['navigation_depth'].fillna(0, inplace=True)
+        print("    Derived 'navigation_depth'.")
     else:
+        # Ensure navigation_depth is numeric, filling NaNs if any slipped through
         df_access['navigation_depth'] = pd.to_numeric(df_access['navigation_depth'], errors='coerce').fillna(0)
+        print("  'navigation_depth' column found and ensured numeric.")
 
-    # Ensure all required columns exist before selection
-    required_columns = ['session_id', 'user_id', 'product_name', 'action', 'timestamp', 'navigation_depth']
-    if 'Product Card Id' in df_access.columns:
-        required_columns.append('Product Card Id')
+    # --- 7. ADD CATEGORY NAME JOIN (CRITICAL PART) ---
+    print("  --- Adding Category Name for Semantic Embeddings ---")
+    if df_orders_raw is not None:
+        print("    df_orders_raw provided. Proceeding with join.")
+        # Get Product Name -> Category Name mapping from orders data
+        # Use 'Product Name' and 'Category Name' as they appear in df_orders_raw
+        try:
+            product_category_map = df_orders_raw[['Product Name', 'Category Name']].drop_duplicates()
+            product_category_map.rename(columns={'Product Name': 'product_name'}, inplace=True)
+            print(f"    Product-Category mapping created. Shape: {product_category_map.shape}")
 
-    missing_cols = set(required_columns) - set(df_access.columns)
-    if missing_cols:
-        raise KeyError(f"Missing required columns in access logs preprocessing: {missing_cols}")
+            # Merge Category Name onto access logs
+            # Use 'left' join to keep all access logs, unmatched will get NaN in 'Category Name'
+            df_access_with_cat = df_access.merge(product_category_map, on='product_name', how='left')
+            
+            missing_cats = df_access_with_cat['Category Name'].isna().sum()
+            print(f"    Access log entries without Category Name after join: {missing_cats} (out of {len(df_access_with_cat)})")
+            
+            if missing_cats > 0:
+                print(f"    Warning: {missing_cats} access log entries could not be linked to a Category Name.")
+                # Optionally fill with a placeholder
+                # df_access_with_cat['Category Name'].fillna('Unknown_Category', inplace=True)
+                
+            # Update df_access to the version with Category Name
+            df_access = df_access_with_cat
+            
+        except KeyError as e:
+            print(f"    Error creating product-category mapping: {e}")
+            print("    'Category Name' will not be added.")
+        except Exception as e:
+            print(f"    Unexpected error during Category Name join: {e}")
+            print("    'Category Name' will not be added.")
+    else:
+        print("    Warning: df_orders_raw not provided. Cannot add Category Name.")
+        # Optionally add a dummy column or handle gracefully
+        # df_access['Category Name'] = 'Unknown_Category_Dummy'
+    print("  --- End Adding Category Name ---")
+    # ----------------------------------------------
 
-    df_processed_access = df_access[required_columns].copy()
+    # --- 8. Select and Reorder Final Columns ---
+    # Define the final set of columns expected by downstream processes
+    final_columns = [
+        'session_id', 'user_id', 'product_name', 'Category Name', 'action', 
+        'timestamp', 'navigation_depth'
+    ]
+    # Ensure all final columns are present
+    available_final_columns = [col for col in final_columns if col in df_access.columns]
+    missing_final_cols = set(final_columns) - set(available_final_columns)
+    if missing_final_cols:
+        print(f"  Warning: Expected final columns missing: {missing_final_cols}. Proceeding with available columns: {available_final_columns}")
+
+    # Final copy for output
+    df_processed_access = df_access[available_final_columns].copy() 
+    
+    # --- 9. Sort by User and Time (Good Practice) ---
     df_processed_access.sort_values(by=['user_id', 'timestamp'], inplace=True)
     df_processed_access.reset_index(drop=True, inplace=True)
 
     print(f"  Final access log shape: {df_processed_access.shape}")
+    print(f"  Final access log columns: {list(df_processed_access.columns)}")
+    # Print sample to verify
     print(f"  Sample of processed access logs:\n{df_processed_access.head()}")
+    
     return df_processed_access
-
 
 def preprocess_gnn_data(df_orders_raw, df_access_processed, start_date=None, end_date=None):
     """
     Extracts nodes and edges for the GNN using both datasets, filtered by date.
     Nodes: Customer (IP), Product, Warehouse (Order Region).
     Edges: Customer -> Product (from access logs), Product -> Warehouse (from orders).
-    Features: Derived from transactional data within the date range, including engineered features.
+    Features: Derived from transactional data within the date range.
     """
     print("Extracting GNN data from orders and linking to access logs...")
     df_orders = df_orders_raw.copy()
@@ -125,27 +209,22 @@ def preprocess_gnn_data(df_orders_raw, df_access_processed, start_date=None, end
     print(f"  Filtered orders to date range: {start_date} to {end_date}. Remaining orders: {len(df_orders)}")
     # --- END Temporal Filter ---
 
-    # --- Link Access Logs to Order Data ---
-    # Note: df_access_processed should also ideally be filtered by the same date range
-    # if it contained timestamps. However, the sample doesn't show a direct timestamp
-    # for access logs linked to order dates. We'll proceed with the current logic,
-    # assuming df_access_processed is relevant for the time period of df_orders.
-    # A more precise method would filter df_access_processed based on interaction
-    # timestamps falling within the order date range, if such timestamps existed.
-    
-    access_products = df_access_processed[['product_name']].drop_duplicates()
+    # --- Link Access Logs to Order Data (via product_name -> Product Card Id) ---
+    # Get Product Name -> Product Card Id mapping from filtered orders
     order_product_mapping = df_orders[['Product Name', 'Product Card Id']].drop_duplicates()
     order_product_mapping.rename(columns={'Product Name': 'product_name'}, inplace=True)
     
+    # Merge Product Card Id onto access logs
     df_access_with_id = df_access_processed.merge(order_product_mapping, on='product_name', how='left')
     missing_ids = df_access_with_id['Product Card Id'].isna().sum()
     print(f"  Access log entries without matching Product Card Id: {missing_ids} (out of {len(df_access_with_id)})")
     df_access_valid = df_access_with_id.dropna(subset=['Product Card Id']).copy()
     df_access_valid['Product Card Id'] = df_access_valid['Product Card Id'].astype(int)
+    # --- END Linking ---
 
     # --- Nodes ---
     product_ids_in_access = df_access_valid['Product Card Id'].unique()
-    # Ensure products considered are only those relevant to the filtered orders
+    # Ensure products considered are only those relevant to the filtered orders and access logs
     product_agg = df_orders[df_orders['Product Card Id'].isin(product_ids_in_access)].groupby('Product Card Id').agg({
         'Product Price': 'mean',
         'Category Name': lambda x: x.mode().iloc[0] if not x.mode().empty else 'Unknown'
@@ -185,7 +264,6 @@ def preprocess_gnn_data(df_orders_raw, df_access_processed, start_date=None, end
     edges_product_warehouse.columns = ['source_node_id', 'target_node_id']
     edges_product_warehouse['edge_type'] = 'product_shipped_from_region'
 
-    # Combine all edges
     gnn_edges = pd.concat([edges_customer_product, edges_product_warehouse], ignore_index=True, sort=False)
 
     # --- Node Features (Derived from Filtered Order Data) ---
@@ -205,17 +283,20 @@ def preprocess_gnn_data(df_orders_raw, df_access_processed, start_date=None, end
     print("  Sorted orders by date for historical calculations.")
 
     # Function to calculate historical delay rate up to a given date for a specific group
+    # --- FIXED: Avoid chained assignment with inplace=True on group subsets ---
     def calc_delay_rate(group):
         # group is a DataFrame sorted by date for a specific product or region
-        group = group.copy()
+        group = group.copy() # Work on a copy
         group['cum_late'] = group['is_late'].cumsum()
         group['cum_count'] = range(1, len(group) + 1)
         # Delay rate = (late orders so far) / (total orders so far)
         # Use shift(1) to get the rate *before* the current order is known/processed
         group['historical_delay_rate'] = group['cum_late'].shift(1) / group['cum_count'].shift(1)
-        # Fill NaN for the first order (no history) with 0 or a default (using 0 for simplicity)
-        group['historical_delay_rate'].fillna(0, inplace=True)
-        return group
+        # --- FIX: Assign result of fillna back to the column ---
+        # Instead of: group['historical_delay_rate'].fillna(0, inplace=True)
+        group['historical_delay_rate'] = group['historical_delay_rate'].fillna(0)
+        # -----------------------------------------------------
+        return group # Return the modified group
 
     # --- 1. Product Historical Delay Rate ---
     try:
@@ -403,7 +484,7 @@ def main():
         
         # Preprocess access logs once, before any date filtering on orders
         # This is a simplification; ideally access logs would also be date-filtered.
-        df_processed_access = preprocess_access_logs(df_raw_access)
+        df_processed_access = preprocess_access_logs(df_raw_access, df_raw_orders) # Pass orders for Category Name
         
         # Preprocess GNN data for this time window
         # df_raw_access is passed as-is; filtering logic is inside preprocess_gnn_data

@@ -185,6 +185,7 @@ def main():
         title="Final GNN Model Training & Validation Loss",
         save_path=os.path.join(viz_output_dir, 'gnn_train_val_loss.png')
     )
+    print("  -> Done.")
 
     print("\nGenerating Cross-Validation Results Plot...")
     plot_cv_results(
@@ -192,6 +193,7 @@ def main():
         title="GNN Cross-Validation Test MSE per Fold",
         save_path=os.path.join(viz_output_dir, 'gnn_cv_folds.png')
     )
+    print("  -> Done.")
 
     print("\nGenerating Performance Comparison Plot...")
     plot_performance_comparison(
@@ -201,6 +203,7 @@ def main():
         title="GNN: Final Model vs. Cross-Validation Average",
         save_path=os.path.join(viz_output_dir, 'gnn_performance_comparison.png')
     )
+    print("  -> Done.")
 
     print("\nGenerating Feature Importance Analysis (Placeholder)...")
     analyze_feature_importance(
