@@ -168,7 +168,7 @@ data/
 # Model checkpoints and saved models (you might want to commit final models)
 models/saved/
 models/checkpoints/
-
+models/
 # Reports and outputs
 reports/
 outputs/
