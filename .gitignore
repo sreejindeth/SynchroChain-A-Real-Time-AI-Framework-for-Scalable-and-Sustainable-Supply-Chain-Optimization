@@ -21,29 +21,28 @@ env.bak/
 venv.bak/
 
 # Data files (too large for git)
-# data/raw/*.csv
-# data/processed/*.csv
-# data/processed/temporal_splits/**/*.csv
+data/
+!data/.gitkeep
 !data/raw/.gitkeep
 !data/processed/.gitkeep
 
 # Trained models (too large for git)
-# models/*.pth
-# models/*.pkl
-# models/**/*.pth
-# models/**/*.pkl
+models/*.pth
+models/*.pkl
+models/**/*.pth
+models/**/*.pkl
 models/distilbert_tokenizer/
 models/bert_tokenizer/
-# models/saved/*.pth
-# models/saved/*.pkl
+models/saved/*.pth
+models/saved/*.pkl
 models/cv_results/
 
 # Keep model directory structure
 !models/.gitkeep
 !models/saved/.gitkeep
 
-# Results and outputs (keep essential visualizations)
-# results/
+# Results and outputs (too large for git)
+results/
 logs/
 *.log
 reports/viz/
