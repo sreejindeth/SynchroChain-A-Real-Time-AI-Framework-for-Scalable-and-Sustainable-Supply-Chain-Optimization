@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SynchroChain - AI Supply Chain Optimizer</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-rocket me-2"></i>SynchroChain
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#dashboard" onclick="showSection('dashboard')">
+                            <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#ai-predictions" onclick="showSection('ai-predictions')">
+                            <i class="fas fa-brain me-1"></i>AI Predictions
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#analytics" onclick="showSection('analytics')">
+                            <i class="fas fa-chart-line me-1"></i>Analytics
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#settings" onclick="showSection('settings')">
+                            <i class="fas fa-cog me-1"></i>Settings
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid mt-4">
+        
+        <!-- Dashboard Section -->
+        <div id="dashboard" class="content-section">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h1 class="text-center mb-4">
+                        <i class="fas fa-rocket text-primary"></i>
+                        SynchroChain AI Supply Chain Optimizer
+                    </h1>
+                    <p class="text-center text-muted">Real-time AI-driven supply chain optimization and decision making</p>
+                </div>
+            </div>
+
+            <!-- Key Metrics -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card metric-card bg-primary text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h6 class="card-title">Active Orders</h6>
+                                    <h3 id="active-orders">1,247</h3>
+                                    <small><i class="fas fa-arrow-up"></i> +156 from yesterday</small>
+                                </div>
+                                <div class="metric-icon">
+                                    <i class="fas fa-shopping-cart fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card metric-card bg-success text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h6 class="card-title">AI Accuracy</h6>
+                                    <h3 id="ai-accuracy">69%</h3>
+                                    <small><i class="fas fa-arrow-up"></i> 2.1x better than baseline</small>
+                                </div>
+                                <div class="metric-icon">
+                                    <i class="fas fa-brain fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card metric-card bg-warning text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h6 class="card-title">Processing Speed</h6>
+                                    <h3 id="processing-speed">3ms</h3>
+                                    <small><i class="fas fa-arrow-down"></i> 357 req/s throughput</small>
+                                </div>
+                                <div class="metric-icon">
+                                    <i class="fas fa-bolt fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card metric-card bg-info text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h6 class="card-title">Cost Savings</h6>
+                                    <h3 id="cost-savings">25%</h3>
+                                    <small><i class="fas fa-arrow-up"></i> $2.1M saved this month</small>
+                                </div>
+                                <div class="metric-icon">
+                                    <i class="fas fa-dollar-sign fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="row mb-4">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-chart-line me-2"></i>Order Volume Trend</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="order-trend-chart" style="height: 400px;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-pie-chart me-2"></i>AI Decision Distribution</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="decision-pie-chart" style="height: 400px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Indicators -->
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card performance-card">
+                        <div class="card-body text-center">
+                            <i class="fas fa-leaf fa-3x text-success mb-3"></i>
+                            <h4>Carbon Efficiency</h4>
+                            <h2 class="text-success">85%</h2>
+                            <p class="text-muted">↑ 5.2% from last month</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card performance-card">
+                        <div class="card-body text-center">
+                            <i class="fas fa-smile fa-3x text-primary mb-3"></i>
+                            <h4>Customer Satisfaction</h4>
+                            <h2 class="text-primary">94%</h2>
+                            <p class="text-muted">↑ 3.1% from last month</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card performance-card">
+                        <div class="card-body text-center">
+                            <i class="fas fa-sync fa-3x text-warning mb-3"></i>
+                            <h4>Inventory Turnover</h4>
+                            <h2 class="text-warning">12.3x</h2>
+                            <p class="text-muted">↓ 0.8x from last month</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Predictions Section -->
+        <div id="ai-predictions" class="content-section" style="display: none;">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h2><i class="fas fa-brain me-2"></i>AI-Powered Predictions</h2>
+                    <p class="text-muted">Test your AI models with real-time predictions</p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-user me-2"></i>User Session Simulation</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label">Products Viewed:</label>
+                                <select class="form-select" id="product-select" multiple>
+                                    <option value="wireless-headphones">Wireless Headphones</option>
+                                    <option value="smartphone-case">Smartphone Case</option>
+                                    <option value="laptop-stand">Laptop Stand</option>
+                                    <option value="usb-cable">USB-C Cable</option>
+                                    <option value="wireless-mouse">Wireless Mouse</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">User Actions:</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="action-view" checked>
+                                    <label class="form-check-label" for="action-view">Product View</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="action-cart">
+                                    <label class="form-check-label" for="action-cart">Add to Cart</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="action-search">
+                                    <label class="form-check-label" for="action-search">Search</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-warehouse me-2"></i>Supply Chain Context</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label">Warehouse Location:</label>
+                                <select class="form-select" id="warehouse-select">
+                                    <option value="US_WEST">US West</option>
+                                    <option value="US_EAST">US East</option>
+                                    <option value="EU_CENTRAL">EU Central</option>
+                                    <option value="ASIA_PACIFIC">Asia Pacific</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Current Inventory: <span id="inventory-value">150</span></label>
+                                <input type="range" class="form-range" id="inventory-slider" min="0" max="500" value="150">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Delay Risk: <span id="delay-value">15%</span></label>
+                                <input type="range" class="form-range" id="delay-slider" min="0" max="100" value="15">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-12 text-center">
+                    <button class="btn btn-primary btn-lg" onclick="runAIPrediction()">
+                        <i class="fas fa-rocket me-2"></i>Run AI Prediction
+                    </button>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div id="prediction-results" class="row mt-4" style="display: none;">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header bg-info text-white">
+                            <h5><i class="fas fa-brain me-2"></i>Intent Analysis</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="intent-chart" style="height: 300px;"></div>
+                            <div class="mt-3">
+                                <strong>Urgency Score: <span id="urgency-score">0.7</span></strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header bg-warning text-white">
+                            <h5><i class="fas fa-exclamation-triangle me-2"></i>Supply Chain Risk</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="risk-chart" style="height: 300px;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header bg-success text-white">
+                            <h5><i class="fas fa-bullseye me-2"></i>Final Decision</h5>
+                        </div>
+                        <div class="card-body text-center">
+                            <div id="decision-result">
+                                <h3 id="decision-action" class="text-success">Priority Shipping</h3>
+                                <p>Confidence: <strong id="decision-confidence">74.9%</strong></p>
+                                <p class="text-muted" id="decision-reasoning">
+                                    Selected priority shipping based on high user intent and medium supply chain risk
+                                </p>
+                                <small class="text-muted">Processing Time: <span id="processing-time">3ms</span></small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Section -->
+        <div id="analytics" class="content-section" style="display: none;">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h2><i class="fas fa-chart-line me-2"></i>Analytics & Performance</h2>
+                    <p class="text-muted">Historical performance and model analysis</p>
+                </div>
+            </div>
+
+            <!-- Model Performance Cards -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card model-card">
+                        <div class="card-header bg-primary text-white">
+                            <h5><i class="fas fa-brain me-2"></i>Intent Transformer</h5>
+                        </div>
+                        <div class="card-body">
+                            <h3 class="text-primary">69% Accuracy</h3>
+                            <p class="text-muted">2.1x better than baseline</p>
+                            <div class="progress mb-2">
+                                <div class="progress-bar bg-primary" style="width: 69%"></div>
+                            </div>
+                            <small class="text-muted">Training Time: 75 minutes</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card model-card">
+                        <div class="card-header bg-warning text-white">
+                            <h5><i class="fas fa-project-diagram me-2"></i>GNN Model</h5>
+                        </div>
+                        <div class="card-body">
+                            <h3 class="text-warning">0.045 MAE</h3>
+                            <p class="text-muted">Enhanced GNN performance</p>
+                            <div class="progress mb-2">
+                                <div class="progress-bar bg-warning" style="width: 85%"></div>
+                            </div>
+                            <small class="text-muted">Model Size: 2.1MB</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card model-card">
+                        <div class="card-header bg-success text-white">
+                            <h5><i class="fas fa-robot me-2"></i>PPO Agent</h5>
+                        </div>
+                        <div class="card-body">
+                            <h3 class="text-success">21.3% Improvement</h3>
+                            <p class="text-muted">Training convergence</p>
+                            <div class="progress mb-2">
+                                <div class="progress-bar bg-success" style="width: 77%"></div>
+                            </div>
+                            <small class="text-muted">Cost Efficiency: 3.118</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Chart -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-chart-area me-2"></i>Historical Performance (90 Days)</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="performance-chart" style="height: 400px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Section -->
+        <div id="settings" class="content-section" style="display: none;">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h2><i class="fas fa-cog me-2"></i>System Settings</h2>
+                    <p class="text-muted">Configure system parameters and monitor performance</p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-sliders-h me-2"></i>Model Configuration</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label">Intent Transformer Learning Rate:</label>
+                                <select class="form-select">
+                                    <option value="1e-4">1e-4</option>
+                                    <option value="3e-4" selected>3e-4</option>
+                                    <option value="5e-4">5e-4</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Batch Size:</label>
+                                <select class="form-select">
+                                    <option value="16">16</option>
+                                    <option value="32" selected>32</option>
+                                    <option value="64">64</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">PPO Epochs:</label>
+                                <input type="number" class="form-control" value="100" min="50" max="200">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-monitor-heart-rate me-2"></i>System Monitoring</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-6 mb-3">
+                                    <h6>CPU Usage</h6>
+                                    <h4 class="text-info">45%</h4>
+                                    <small class="text-muted">↓ 5%</small>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <h6>Memory Usage</h6>
+                                    <h4 class="text-warning">2.1 GB</h4>
+                                    <small class="text-muted">↑ 0.2 GB</small>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <h6>Requests/Hour</h6>
+                                    <h4 class="text-success">1,247</h4>
+                                    <small class="text-muted">↑ 156</small>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <h6>Error Rate</h6>
+                                    <h4 class="text-danger">0.02%</h4>
+                                    <small class="text-muted">↓ 0.01%</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
+

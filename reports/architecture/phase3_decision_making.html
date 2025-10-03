@@ -1,0 +1,38 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phase 3: Decision-Making</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f9;
+        }
+    </style>
+</head>
+<body>
+    <pre class="mermaid">
+        
+graph TD
+    subgraph "Phase 3: Autonomous Decision-Making"
+        A["fa:fa-brain State Vector<br>(Combined AI Insights)"] --> B["fa:fa-robot RL Decision Agent<br>(Selects Optimal Action)"];
+        B -- "Take Action" --> C{Optimized Actions};
+    end
+    style A fill:#f8d7da,stroke:#333
+    style B fill:#fff2cc,stroke:#333
+    style C fill:#d1ecf1,stroke:#333
+
+    </pre>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+</body>
+</html>

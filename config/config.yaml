@@ -1,0 +1,44 @@
+# config/config.yaml
+data:
+  raw_data_path: "data/raw"
+  processed_data_path: "data/processed"
+  temporal_splits_path: "data/processed/temporal_splits"
+
+models:
+  intent_transformer:
+    model_name: "high-accuracy-focused"  # Focus on achieving 80-85%
+    max_seq_length: 8  # Longer sequences for better patterns
+    max_desc_length: 12  # Longer descriptions for richer features
+    batch_size: 32  # Smaller batches for better gradients
+    learning_rate: 3e-4  # Even lower for stability
+    num_epochs: 30  # More epochs for full convergence
+    dropout: 0.2  # Balanced dropout
+    d_model: 256  # Larger model capacity
+    num_heads: 8  # More attention heads
+    num_layers: 4  # Deeper model
+    
+  gnn:
+    hidden_dim: 64
+    num_layers: 3
+    num_heads: 2
+    dropout: 0.1
+    learning_rate: 0.00033
+    weight_decay: 0.00086
+    num_epochs: 20
+    
+  ppo:
+    learning_rate: 3e-4
+    epochs: 100
+    batch_size: 64
+    rollout_steps: 2048
+    ppo_epochs: 10
+    gamma: 0.99
+    eps_clip: 0.2
+    value_coef: 0.5
+    entropy_coef: 0.01
+    
+system:
+  device: "cpu"
+  simulation:
+    num_sessions: 100
+    random_seed: 42
