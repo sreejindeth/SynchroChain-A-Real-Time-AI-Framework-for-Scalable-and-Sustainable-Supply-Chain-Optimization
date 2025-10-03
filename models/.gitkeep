@@ -1,0 +1,2 @@
+# This file ensures the models directory is tracked by Git
+# Model files (.pth, .pkl) are ignored due to size constraints
