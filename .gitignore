@@ -25,6 +25,10 @@ data/
 !data/.gitkeep
 !data/raw/.gitkeep
 !data/processed/.gitkeep
+!data/processed/temporal_splits/.gitkeep
+!data/processed/temporal_splits/test/.gitkeep
+!data/processed/temporal_splits/train/.gitkeep
+!data/processed/temporal_splits/val/.gitkeep
 
 # Trained models (too large for git)
 models/*.pth
@@ -59,6 +63,12 @@ reports/
 *.zip
 *.tar.gz
 *.rar
+*.h5
+*.hdf5
+*.npy
+*.npz
+*.parquet
+*.feather
 
 # Jupyter Notebooks
 .ipynb_checkpoints/
