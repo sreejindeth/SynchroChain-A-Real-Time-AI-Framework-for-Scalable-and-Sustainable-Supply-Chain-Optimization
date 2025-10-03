@@ -45,7 +45,20 @@ models/cv_results/
 results/
 logs/
 *.log
-reports/viz/
+reports/
+
+# Large file types
+*.csv
+*.pth
+*.pkl
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.pdf
+*.zip
+*.tar.gz
+*.rar
 
 # Jupyter Notebooks
 .ipynb_checkpoints/
