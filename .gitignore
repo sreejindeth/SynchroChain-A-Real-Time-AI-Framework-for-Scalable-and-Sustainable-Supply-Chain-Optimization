@@ -23,46 +23,17 @@ venv.bak/
 # Data files (too large for git)
 data/
 !data/.gitkeep
-!data/raw/.gitkeep
-!data/processed/.gitkeep
-!data/processed/temporal_splits/.gitkeep
-!data/processed/temporal_splits/test/.gitkeep
-!data/processed/temporal_splits/train/.gitkeep
-!data/processed/temporal_splits/val/.gitkeep
 
 # Trained models (too large for git)
 models/*.pth
 models/*.pkl
-models/**/*.pth
-models/**/*.pkl
-models/distilbert_tokenizer/
-models/bert_tokenizer/
-models/saved/*.pth
-models/saved/*.pkl
-models/cv_results/
 
-# Keep model directory structure
-!models/.gitkeep
-!models/saved/.gitkeep
-
-# Results and outputs (too large for git)
-results/
+# Logs and temporary files
 logs/
 *.log
-reports/
 
-# Large file types
+# Large file types (but allow some visualizations)
 *.csv
-*.pth
-*.pkl
-*.png
-*.jpg
-*.jpeg
-*.gif
-*.pdf
-*.zip
-*.tar.gz
-*.rar
 *.h5
 *.hdf5
 *.npy

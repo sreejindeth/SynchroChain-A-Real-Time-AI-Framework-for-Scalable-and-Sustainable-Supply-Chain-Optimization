@@ -1,0 +1,2 @@
+# This file ensures the data directory is preserved in git
+# while the actual data files are ignored due to their large size
