@@ -10,6 +10,11 @@ import plotly.graph_objects as go
 from datetime import datetime, timedelta
 import json
 import os
+import sys
+
+# Add core directory to path for login import
+core_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'core')
+sys.path.insert(0, core_dir)
 from login import get_user_stats
 
 def admin_dashboard():
@@ -213,14 +218,22 @@ def model_performance_page():
         with col2:
             # Actual vs Predicted
             actual_pred_data = generate_actual_vs_predicted()
+            
+            # Check if statsmodels is available for trendline
+            try:
+                import statsmodels.api as sm  # noqa: F401
+                has_statsmodels = True
+            except ImportError:
+                has_statsmodels = False
+            
             fig_scatter = px.scatter(
                 actual_pred_data,
                 x='actual',
                 y='predicted',
                 title="Actual vs Predicted Delay Risk",
-                trendline="ols"
+                trendline="ols" if has_statsmodels else None
             )
-            st.plotly_chart(fig_scatter, use_container_width=True)
+            st.plotly_chart(fig_scatter, width='stretch')
         
         # Feature importance
         st.markdown("##### Feature Importance")

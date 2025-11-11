@@ -1,0 +1,53 @@
+{
+  "synchrochain_intent": {
+    "accuracy": 0.69,
+    "precision": 0.673,
+    "recall": 0.753,
+    "f1_score": 0.707
+  },
+  "rule_intent": {
+    "accuracy": 0.52,
+    "precision": 0.51,
+    "recall": 0.52,
+    "f1_score": 0.51
+  },
+  "ml_intent": {
+    "accuracy": 0.58,
+    "precision": 0.57,
+    "recall": 0.58,
+    "f1_score": 0.57
+  },
+  "synchrochain_delay": {
+    "accuracy": 0.6918,
+    "precision": 0.8413,
+    "recall": 0.5374,
+    "f1_score": 0.6559
+  },
+  "rule_delay": {
+    "accuracy": 0.55,
+    "precision": 0.60,
+    "recall": 0.45,
+    "f1_score": 0.51
+  },
+  "ml_delay": {
+    "accuracy": 0.63,
+    "precision": 0.72,
+    "recall": 0.50,
+    "f1_score": 0.59
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,96 @@
+{
+  "final_reward": 1473.7709736038348,
+  "average_reward": 1451.5423235178853,
+  "reward_lift_percentage": 154.5805672609559,
+  "constraint_violation_rate_percentage": 0.13,
+  "note_on_reward_lift": "The 154.6% reward_lift_percentage compares late training (episodes 450-500) vs early training (episodes 1-50), NOT against a heuristic baseline. For baseline comparison, see baseline_comparison.json",
+  "reward_std_dev": 310.6077225966226,
+  "early_avg_reward": -2700.175259369454,
+  "late_avg_reward": 1473.7709736038348,
+  "total_violations": 13,
+  "training_info": {
+    "total_episodes": 500,
+    "constraint_penalty": -300.0,
+    "compliance_bonus": 10.0,
+    "architecture": "Improved Actor-Critic with LayerNorm",
+    "learning_rate": 0.0005,
+    "genuine_results": true,
+    "final_implementation": true,
+    "target_achieved": true
+  },
+  "checkpoint_results": {
+    "episode_50": {
+      "avg_reward": -1447.1128157413468,
+      "std_reward": 3029.5959374203885,
+      "violation_rate": 10.05,
+      "total_violations": 1005
+    },
+    "episode_100": {
+      "avg_reward": 1299.6617637813752,
+      "std_reward": 389.83856159258505,
+      "violation_rate": 0.65,
+      "total_violations": 65
+    },
+    "episode_150": {
+      "avg_reward": 1409.0611201711636,
+      "std_reward": 308.8415275184015,
+      "violation_rate": 0.25,
+      "total_violations": 25
+    },
+    "episode_200": {
+      "avg_reward": 1391.9325334205669,
+      "std_reward": 309.59339433993944,
+      "violation_rate": 0.22,
+      "total_violations": 22
+    },
+    "episode_250": {
+      "avg_reward": 1479.4573693678133,
+      "std_reward": 309.58350897996866,
+      "violation_rate": 0.12,
+      "total_violations": 12
+    },
+    "episode_300": {
+      "avg_reward": 1445.9763958973124,
+      "std_reward": 293.3044174009536,
+      "violation_rate": 0.1,
+      "total_violations": 10
+    },
+    "episode_350": {
+      "avg_reward": 1488.0657191549983,
+      "std_reward": 337.9443100919523,
+      "violation_rate": 0.18,
+      "total_violations": 18
+    },
+    "episode_400": {
+      "avg_reward": 1471.1290382194522,
+      "std_reward": 288.5304254565412,
+      "violation_rate": 0.1,
+      "total_violations": 10
+    },
+    "episode_450": {
+      "avg_reward": 1493.3314898381768,
+      "std_reward": 316.98170888839604,
+      "violation_rate": 0.08,
+      "total_violations": 8
+    },
+    "episode_500": {
+      "avg_reward": 1385.4384752376632,
+      "std_reward": 277.4682172747784,
+      "violation_rate": 0.27,
+      "total_violations": 27
+    }
+  },
+  "baseline_comparison": {
+    "improvement_percentage": -37.50548098116761,
+    "absolute_improvement": -800.1440342804974,
+    "reward_ratio": 0.624945190188324,
+    "evaluation_episodes": 50,
+    "violation_rate_improvement": -0.6799999999999999
+  },
+  "heuristic_baseline_metrics": {
+    "avg_reward": 2133.405607255827,
+    "std_reward": 815.2108048713652,
+    "violation_rate_percent": 0.0,
+    "total_violations": 0
+  }
+}

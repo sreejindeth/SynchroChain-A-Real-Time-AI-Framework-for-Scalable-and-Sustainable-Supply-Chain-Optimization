@@ -1,0 +1,12 @@
+PPO Agent vs Heuristic Baseline Comparison
+======================================================================
+
+PPO Agent Average Reward: 1333.26 ± 365.86
+PPO Agent Violation Rate: 0.68%
+
+Heuristic Baseline Average Reward: 2133.41 ± 815.21
+Heuristic Baseline Violation Rate: 0.00%
+
+Improvement: -37.51%
+Absolute Improvement: -800.14
+Multiplier: 0.62x

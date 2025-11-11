@@ -38,66 +38,121 @@ class ModelManager:
             # Load PPO Agent
             self._load_ppo_agent()
             
-            print("All models loaded successfully!")
+            # Check which models are genuine vs mock
+            genuine_models = []
+            mock_models = []
+            
+            if not isinstance(self.models.get('intent_transformer'), MockIntentTransformer):
+                genuine_models.append('Intent Transformer')
+            else:
+                mock_models.append('Intent Transformer')
+            
+            if not isinstance(self.models.get('gnn'), MockDelayRiskGNN):
+                genuine_models.append('Delay Risk GNN')
+            else:
+                mock_models.append('Delay Risk GNN')
+            
+            if not isinstance(self.models.get('ppo'), MockPPOAgent):
+                genuine_models.append('PPO Agent')
+            else:
+                mock_models.append('PPO Agent')
+            
+            print("="*60)
+            print("Model Loading Status:")
+            print("="*60)
+            if genuine_models:
+                print(f"✅ Genuine Models Loaded: {', '.join(genuine_models)}")
+            if mock_models:
+                print(f"⚠️  Mock Models (Fallback): {', '.join(mock_models)}")
+            print("="*60)
             
         except Exception as e:
-            print(f"Some models failed to load: {e}")
+            print(f"⚠️  Some models failed to load: {e}")
+            print("⚠️  Using mock models as fallback")
             # Initialize with mock models for demo
             self._initialize_mock_models()
     
     def _load_intent_transformer(self):
         """Load the Intent Transformer model."""
         try:
-            # Try to load actual model
-            model_path = 'models/balanced_intent_transformer.pth'
+            # Try to load actual model (LATEST VERSION)
+            import sys
+            sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'production'))
+            from SynchroChain_Production_System import IntentTransformer
+            
+            model_path = 'models/smart_balanced_intent_transformer.pth'
             encoder_path = 'models/intent_encoders.pkl'
             
-            if os.path.exists(model_path) and os.path.exists(encoder_path):
-                # Load actual model (placeholder for now)
-                self.models['intent_transformer'] = MockIntentTransformer()
-                self.encoders['intent'] = self._load_encoders(encoder_path)
-                print("Intent Transformer loaded")
+            if os.path.exists(model_path):
+                # Load actual production IntentTransformer
+                self.models['intent_transformer'] = IntentTransformer(
+                    model_path=model_path,
+                    encoder_path=encoder_path
+                )
+                self.encoders['intent'] = self.models['intent_transformer'].encoders
+                print("✅ Intent Transformer loaded (actual model)")
             else:
-                raise FileNotFoundError("Model files not found")
+                raise FileNotFoundError(f"Model file not found: {model_path}")
                 
         except Exception as e:
-            print(f"Intent Transformer: {e}")
+            print(f"⚠️  Intent Transformer: {e}")
+            print("⚠️  Falling back to mock Intent Transformer")
+            print("⚠️  WARNING: Using fabricated values instead of genuine model!")
             self.models['intent_transformer'] = MockIntentTransformer()
             self.encoders['intent'] = self._get_default_encoders()
     
     def _load_gnn_model(self):
-        """Load the GNN model."""
+        """Load the GNN classification model."""
         try:
-            model_path = 'models/final_delay_risk_model.pth'
-            scaler_path = 'models/final_target_scalers.pkl'
+            # Updated to use classification model
+            import sys
+            sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'production'))
+            from SynchroChain_Production_System import DelayRiskGNN
             
-            if os.path.exists(model_path) and os.path.exists(scaler_path):
-                # Load actual model (placeholder for now)
-                self.models['gnn'] = MockDelayRiskGNN()
-                self.scalers['gnn'] = self._load_scalers(scaler_path)
-                print("GNN model loaded")
+            model_path = 'models/gnn_classification.pth'
+            
+            if os.path.exists(model_path):
+                # Use actual classification model from production system
+                self.models['gnn'] = DelayRiskGNN(
+                    model_path=model_path,
+                    scaler_path='models/gnn_scalers.pkl',
+                    encoder_path='models/gnn_label_encoders.pkl'
+                )
+                print("GNN classification model loaded")
             else:
-                raise FileNotFoundError("GNN model files not found")
+                raise FileNotFoundError(f"GNN classification model not found: {model_path}")
                 
         except Exception as e:
-            print(f"GNN model: {e}")
+            print(f"⚠️  GNN model: {e}")
+            print("⚠️  Falling back to mock Delay Risk GNN")
+            print("⚠️  WARNING: Using fabricated values instead of genuine model!")
+            # Fallback to mock if actual model loading fails
             self.models['gnn'] = MockDelayRiskGNN()
             self.scalers['gnn'] = {}
     
     def _load_ppo_agent(self):
         """Load the PPO agent."""
         try:
-            model_path = 'models/ppo_agent_trained.pth'
+            model_path = 'models/ppo_agent_final.pth'
             
             if os.path.exists(model_path):
-                # Load actual model (placeholder for now)
-                self.models['ppo'] = MockPPOAgent()
-                print("PPO agent loaded")
+                # Import and load the actual PPO agent from production system
+                import sys
+                sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'production'))
+                from SynchroChain_Production_System import PPOAgent
+                
+                ppo_agent = PPOAgent(model_path=model_path)
+                if ppo_agent.model is not None:
+                    self.models['ppo'] = ppo_agent
+                    print("✅ PPO agent loaded (genuine model)")
+                else:
+                    raise RuntimeError("PPO model failed to load")
             else:
-                raise FileNotFoundError("PPO model file not found")
+                raise FileNotFoundError(f"PPO model file not found: {model_path}")
                 
         except Exception as e:
-            print(f"PPO agent: {e}")
+            print(f"⚠️  PPO agent: {e}")
+            print("⚠️  Falling back to mock PPO Agent")
             self.models['ppo'] = MockPPOAgent()
     
     def _load_encoders(self, encoder_path):
@@ -154,13 +209,17 @@ class ModelManager:
         delay_risk = self.predict_delay_risk(order_context)
         
         # Create state for RL agent
+        # Normalize order_value to 0-1 range (max reasonable order value: 2000)
+        raw_order_value = order_context.get('order_value', 0)
+        normalized_order_value = min(1.0, raw_order_value / 2000.0) if raw_order_value > 0 else 0.0
+        
         state = {
             'intent_score': intent_score,
             'urgency': urgency,
             'delay_risk': delay_risk,
             'inventory_level': order_context.get('inventory_level', 0.5),
             'carbon_cost': order_context.get('carbon_cost', 0.5),
-            'order_value': order_context.get('order_value', 0),
+            'order_value': normalized_order_value,  # Normalized to 0-1
             'customer_priority': order_context.get('customer_priority', 0.5),
             'supplier_reliability': order_context.get('supplier_reliability', 0.8)
         }

@@ -1,0 +1,38 @@
+{
+  "accuracy": 0.6917601440243734,
+  "precision": 0.8412786547156341,
+  "recall": 0.5374480591871896,
+  "f1_score": 0.655885717819486,
+  "confusion_matrix": [
+    [
+      14370,
+      2001
+    ],
+    [
+      9128,
+      10606
+    ]
+  ],
+  "final_train_loss": 0.5686284322643055,
+  "final_val_loss": 0.5709679882291337,
+  "training_info": {
+    "task": "Binary Classification (NOT Regression)",
+    "num_epochs": 16,
+    "architecture": "Graph Neural Network with Attention",
+    "hidden_dim": 64,
+    "num_layers": 3,
+    "genuine_results": true,
+    "no_target_leakage": true,
+    "excluded_features": [
+      "Days for shipping (real)",
+      "Delivery Status",
+      "Order Status"
+    ],
+    "num_features": 9,
+    "sample_sizes": {
+      "train": 108311,
+      "val": 36103,
+      "test": 36105
+    }
+  }
+}

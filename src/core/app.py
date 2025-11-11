@@ -14,8 +14,35 @@ import sys
 import warnings
 warnings.filterwarnings('ignore')
 
-# Add current directory to path
-sys.path.append('.')
+# Add project paths to sys.path
+# Get the directory containing this file (src/core)
+current_file = os.path.abspath(__file__)
+current_dir = os.path.dirname(current_file)
+# Get the src directory (parent of current_dir)
+src_dir = os.path.dirname(current_dir)
+# Get dashboard directory (sibling of core)
+dashboard_dir = os.path.join(src_dir, 'dashboard')
+
+# Verify paths exist - if not, try resolving from current working directory
+if not os.path.exists(dashboard_dir):
+    # Try resolving from current working directory
+    cwd = os.getcwd()
+    # Try src/dashboard from current working directory
+    if os.path.exists(os.path.join(cwd, 'src', 'dashboard')):
+        src_dir = os.path.join(cwd, 'src')
+        dashboard_dir = os.path.join(src_dir, 'dashboard')
+        current_dir = os.path.join(src_dir, 'core')
+    # Try relative to current file location
+    elif os.path.exists(os.path.join(current_dir, '..', 'dashboard')):
+        dashboard_dir = os.path.abspath(os.path.join(current_dir, '..', 'dashboard'))
+        src_dir = os.path.dirname(dashboard_dir)
+        current_dir = os.path.join(src_dir, 'core')
+
+# Add paths in correct order (avoid duplicates)
+if current_dir not in sys.path:
+    sys.path.insert(0, current_dir)  # src/core (for login, model_integration, user_simulation)
+if dashboard_dir not in sys.path:
+    sys.path.insert(0, dashboard_dir)  # src/dashboard (for admin_dashboard)
 
 # Import our custom modules
 from login import display_login_page

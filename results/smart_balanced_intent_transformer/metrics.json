@@ -1,0 +1,51 @@
+{
+  "accuracy": 0.773365617433414,
+  "precision": 0.8408261804548339,
+  "recall": 0.773365617433414,
+  "f1_score": 0.7824686338894107,
+  "auroc": 0.888052059318675,
+  "confusion_matrix": [
+    [
+      479,
+      122,
+      12
+    ],
+    [
+      28,
+      512,
+      12
+    ],
+    [
+      17,
+      277,
+      606
+    ]
+  ],
+  "class_names": [
+    "High Intent",
+    "Medium Intent",
+    "Low Intent"
+  ],
+  "per_class_metrics": {
+    "High Intent": {
+      "precision": 0.9141221374045801,
+      "recall": 0.7814029363784666,
+      "f1_score": 0.8425681618293756,
+      "support": 613
+    },
+    "Medium Intent": {
+      "precision": 0.562019758507135,
+      "recall": 0.927536231884058,
+      "f1_score": 0.6999316473000684,
+      "support": 552
+    },
+    "Low Intent": {
+      "precision": 0.9619047619047619,
+      "recall": 0.6733333333333333,
+      "f1_score": 0.792156862745098,
+      "support": 900
+    }
+  },
+  "test_samples": 2065
+}
+

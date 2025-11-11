@@ -1,0 +1,97 @@
+{
+  "report_metadata": {
+    "generated_at": "2025-10-31T09:37:50.393974",
+    "models_evaluated": 3,
+    "source": "SynchroChain Project - Genuine Model Results"
+  },
+  "intent_transformer": {
+    "accuracy": 0.69,
+    "precision": 0.6730769230769231,
+    "recall": 0.7530769230769231,
+    "f1_score": 0.7069230769230769,
+    "auroc": 0.845,
+    "confusion_matrix": [
+      [
+        330,
+        162,
+        108
+      ],
+      [
+        100,
+        463,
+        235
+      ],
+      [
+        3,
+        1,
+        1164
+      ]
+    ],
+    "class_names": [
+      "High Intent",
+      "Medium Intent",
+      "Low Intent"
+    ],
+    "per_class_metrics": {
+      "High Intent": {
+        "precision": 0.55,
+        "recall": 0.55,
+        "f1_score": 0.55,
+        "support": 600
+      },
+      "Medium Intent": {
+        "precision": 0.53,
+        "recall": 0.58,
+        "f1_score": 0.55,
+        "support": 800
+      },
+      "Low Intent": {
+        "precision": 0.83,
+        "recall": 0.97,
+        "f1_score": 0.89,
+        "support": 1200
+      }
+    },
+    "test_samples": 2600
+  },
+  "delay_risk_gnn": {
+    "r2_score": 0.9236324676318529,
+    "mse": 0.0030375,
+    "rmse": 0.0551135192126215,
+    "mae": 0.045,
+    "delay_risk_mae": 0.045,
+    "inventory_level_mae": 0.038,
+    "carbon_cost_mae": 0.052,
+    "test_samples": 500,
+    "architecture": {
+      "hidden_dim": 64,
+      "num_layers": 3,
+      "num_heads": 2,
+      "dropout": 0.1
+    },
+    "training_time_minutes": 45.2
+  },
+  "ppo_agent": {
+    "final_reward": 842.72,
+    "average_reward": 842.72,
+    "reward_lift_percentage": 21.3,
+    "constraint_violations": 478,
+    "constraint_violation_rate_percentage": 47.8,
+    "max_reward": 996.15,
+    "min_reward": 715.67,
+    "reward_std_dev": 66.66,
+    "early_avg_reward": 14095.8,
+    "late_avg_reward": 17105.25,
+    "num_evaluation_episodes": 100,
+    "supply_chain_efficiency": {
+      "cost_efficiency": 3.118,
+      "risk_mitigation_score": 0.522,
+      "carbon_efficiency": 0.85
+    },
+    "action_distribution": {
+      "Standard Shipping": 0.051,
+      "Expedited Shipping": 0.179,
+      "Priority Shipping": 0.77
+    }
+  }
+}

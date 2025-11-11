@@ -3,6 +3,9 @@
 # Python
 __pycache__/
 *.py[cod]
+*.pyc
+*.pyo
+*.pyd
 *$py.class
 *.so
 .Python
@@ -16,6 +19,7 @@ build/
 STRM/
 env/
 venv/
+venv_ppo/
 ENV/
 env.bak/
 venv.bak/
@@ -31,6 +35,8 @@ models/*.pkl
 # Logs and temporary files
 logs/
 *.log
+output.txt
+scaler_check.txt
 
 # Large file types (but allow some visualizations)
 *.csv
@@ -62,6 +68,8 @@ desktop.ini
 *.temp
 temp/
 tmp/
+*.bak
+*.backup
 
 # Testing
 .pytest_cache/
@@ -85,3 +93,6 @@ dmypy.json
 !logs/.gitkeep
 !results/.gitkeep
 !reports/viz/.gitkeep
+
+# Note: results/ directory is NOT ignored - it contains verified evaluation results
+# that are part of the project documentation and peer review materials
